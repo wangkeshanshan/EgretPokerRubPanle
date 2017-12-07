@@ -45,6 +45,7 @@ namespace game
 				self.addChild(bmp);
 			}
 		}
+	
 		// 创建高清扑克图片
 		private createCardById(id: string): egret.Bitmap
 		{
@@ -58,6 +59,7 @@ namespace game
 
 		/**
 		 * add poker touch listener
+		 * 给每张图片加上触摸监听
 		 */
 		protected addListener(): void
 		{
@@ -110,6 +112,63 @@ namespace game
 			});
 		}
 		
+		/**
+		 * 触摸开始，记录触摸点 _lastTouchPoint
+		 * 禁用其他图片的 touchEnabled 防止失去焦点
+		 */
+		private touchBegin(evt: egret.TouchEvent): void
+		{
+			this.loopTargets(function (v, i) { v.touchEnabled = evt.target == v });
+			this._lastTouchPoint = { x: evt.localX, y: evt.localY };
+		}
+		
+		/**
+		 * 开始滑动手指
+		 * 计算此时 触摸点与上个触摸点的差距 dx dy
+		 * 在这里限制移动的边距 MAX_X...
+		 */ 
+		private touchMove(evt: egret.TouchEvent): void
+		{
+			let target = <egret.Bitmap>evt.target;
+			if (this._lastTouchPoint != null)
+			{
+				let dx = evt.localX - this._lastTouchPoint.x;
+				let dy = evt.localY - this._lastTouchPoint.y;
+				
+				let laterX = target.x + (dx * DUMP);
+				let laterY = target.y + (dy * DUMP);
+
+				laterX = laterX > MAX_X ? MAX_X : laterX < MIN_X ? MIN_X : laterX;
+				laterY = laterY > MAX_Y ? MAX_Y : laterY < MIN_Y ? MIN_Y : laterY;
+			
+				// 设置最终坐标
+				target.x = laterX;
+				target.y = laterY;
+			}
+		}
+		
+		/** evt >> 触摸结束，手抬起 */
+		private touchEnd(evt: egret.TouchEvent): void
+		{
+			// 将最后触摸点清除
+			this._lastTouchPoint = null;
+			// 设置所有图片为可点击
+			this.loopTargets(function (v, i) { v.touchEnabled = true });
+
+			/** 翻到倒数第二张就可以播放动画了 */
+			// WARNING pokerBmpArray length always larger than 1
+			if (evt.target === this.pokerBmpArray[1])
+			{
+				this.playShowAnim();
+			}
+		}
+		
+		/** 循环pokerBmpArray */
+		private loopTargets(loopFunction: (value: egret.Bitmap, index: number) => void)
+		{
+			this.pokerBmpArray.forEach(loopFunction, this);
+		}
+
 		/** 播放预设动画 */
 		private playShowAnim(): void
 		{
@@ -169,63 +228,6 @@ namespace game
 			}
 			egret.setTimeout(resetAnimation, self, 500);
 // 			game.AnsycTaskPool.startAnsycTaskGameScene(resetAnimation, self, 500);
-		}
-		
-		/**
-		 * 触摸开始，记录触摸点 _lastTouchPoint
-		 * 禁用其他图片的 touchEnabled 防止失去焦点
-		 */
-		private touchBegin(evt: egret.TouchEvent): void
-		{
-			this.loopTargets(function (v, i) { v.touchEnabled = evt.target == v });
-			this._lastTouchPoint = { x: evt.localX, y: evt.localY };
-		}
-		
-		/**
-		 * 开始滑动手指
-		 * 计算此时 触摸点与上个触摸点的差距 dx dy
-		 * 在这里限制移动的边距 MAX_X...
-		 */ 
-		private touchMove(evt: egret.TouchEvent): void
-		{
-			let target = <egret.Bitmap>evt.target;
-			if (this._lastTouchPoint != null)
-			{
-				let dx = evt.localX - this._lastTouchPoint.x;
-				let dy = evt.localY - this._lastTouchPoint.y;
-				
-				let laterX = target.x + (dx * DUMP);
-				let laterY = target.y + (dy * DUMP);
-
-				laterX = laterX > MAX_X ? MAX_X : laterX < MIN_X ? MIN_X : laterX;
-				laterY = laterY > MAX_Y ? MAX_Y : laterY < MIN_Y ? MIN_Y : laterY;
-			
-				// 设置最终坐标
-				target.x = laterX;
-				target.y = laterY;
-			}
-		}
-		
-		/** evt >> 触摸结束，手抬起 */
-		private touchEnd(evt: egret.TouchEvent): void
-		{
-			// 将最后触摸点清除
-			this._lastTouchPoint = null;
-			// 设置所有图片为可点击
-			this.loopTargets(function (v, i) { v.touchEnabled = true });
-
-			/** 翻到倒数第二张就可以播放动画了 */
-			// WARNING pokerBmpArray length always larger than 1
-			if (evt.target === this.pokerBmpArray[1])
-			{
-				this.playShowAnim();
-			}
-		}
-		
-		/** 循环pokerBmpArray */
-		private loopTargets(loopFunction: (value: egret.Bitmap, index: number) => void)
-		{
-			this.pokerBmpArray.forEach(loopFunction, this);
 		}
 	}
 }
