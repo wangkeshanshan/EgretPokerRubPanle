@@ -1,5 +1,5 @@
-/** 搓牌交互界面 */
-	export class RubCardPanel extends EUIComponent
+	/** 搓牌交互界面 */
+	class RubCardPanel extends EUIComponent
 	{
 		private pokerBmpArray: egret.Bitmap[];
 
@@ -166,10 +166,13 @@
 			this.loopTargets(function (v, i) { v.touchEnabled = evt.target == v });
 			this._lastTouchPoint = { x: evt.localX, y: evt.localY };
 		}
-
+		
+		/** evt >> 触摸结束，手抬起 */
 		private touchEnd(evt: egret.TouchEvent): void
 		{
+			// 将最后触摸的点清除
 			this._lastTouchPoint = null;
+			// 设置为可点击
 			this.loopTargets(function (v, i) { v.touchEnabled = true });
 
 			/** 翻到倒数第二张就可以播放动画了 */
@@ -179,7 +182,8 @@
 				this.playShowAnim();
 			}
 		}
-
+		
+		/** 循环pokerBmpArray */
 		private loopTargets(loopFunction: (value: egret.Bitmap, index: number) => void)
 		{
 			this.pokerBmpArray.forEach(loopFunction, this);
