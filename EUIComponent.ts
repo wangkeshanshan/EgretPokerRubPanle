@@ -1,9 +1,12 @@
+namespace game
+{
+
 	export interface IComponent
 	{
 		release(): void;
 	}
 
-export abstract class EUIComponent extends eui.Component implements IComponent
+	export abstract class EUIComponent extends eui.Component implements IComponent
 	{
 
 		protected abstract addListener(): void;
@@ -88,3 +91,4 @@ export abstract class EUIComponent extends eui.Component implements IComponent
 			}
 		}
 	}
+}
