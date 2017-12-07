@@ -1,9 +1,7 @@
-	/** 
-	 * 工作请联系
-	 * @author lyq.android@foxmail.com
-	 */
-
-	/** 搓牌交互界面 */
+/** 
+ * 工作请联系
+ * @author lyq.android@foxmail.com
+ */	
 namespace game
 {
 	const SCENE_WIDTH = 1334;
@@ -20,7 +18,7 @@ namespace game
 	/**   阻尼，改变此值调整触摸扑克的移动反馈    */
 	const DUMP = 0.3;
 	
-	
+	/** 搓牌交互界面 */
 	export class RubCardPanel extends EUIComponent
 	{
 		private pokerBmpArray: egret.Bitmap[];
